@@ -17,22 +17,27 @@ class ArticleForm extends Form
     #[Validate('required')]
     public $content='';
 
+    #[Validate('image|max:1024')]
+    public $photo;
+
     public $published = false;
     public $notifications = [];
 
     public $isAllowedNotification = false;
-
+    public $photo_path = '';
 
     public function setArticle(Article $article)
     {
+        // Load article details including the photo path
         $this->title = $article->title;
         $this->content = $article->content;
         $this->published = $article->published;
         $this->notifications = $article->notifications ?? [];
-        $this->isAllowedNotification = count($this->notifications) > 0 ;
-
+        $this->isAllowedNotification = count($this->notifications) > 0;
+        $this->photo_path = $article->photo_path;  // Load the existing photo path
         $this->article = $article;
     }
+
 
     public function update(){
 
@@ -42,7 +47,14 @@ class ArticleForm extends Form
 
         }
         $this->validate();
-        $this->article->update($this->only(['title','content', 'published' , 'notifications']));
+
+        if($this->photo)
+        {
+            $this->photo_path = $this->photo->storePublicly('article_photos',['disk' => 'public']);
+        }
+
+        $this->article->update($this->only(['title','content', 'published' , 'notifications' , 'photo_path']));
+        cache()->forget('published-count');
     }
 
     public function store()
@@ -53,7 +65,11 @@ class ArticleForm extends Form
             $this->notifications = [];
 
         }
-        Article::create($this->only(['title','content', 'published' , 'notifications']));
-
+        if($this->photo)
+        {
+            $this->photo_path = $this->photo->storePublicly('article_photos',['disk' => 'public']);
+        }
+        Article::create($this->only(['title','content', 'published' , 'notifications','photo_path']));
+        cache()->forget('published-count');
     }
 }

@@ -24,6 +24,29 @@
             </div>
         </div>
         <div class="mb-3">
+            <label class="block text-white">
+                Photo
+            </label>
+            <div class="flex items-center">
+                <input type="file" wire:model='form.photo'>
+                <div>
+                    @if ($form->photo)
+                    <img src="{{ $form->photo->temporaryUrl() }}" alt="">
+                    @endif
+                </div>
+            </div>
+
+            <div>
+                @error('form.photo') <span class="text-red-600">{{ $message }}</span> @enderror
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="flex items-center">
+                <input type="checkbox" wire:model.boolean='form.published' value="published" class="mr-2">
+                Published <span wire:dirty wire:target='form.published'>*</span>
+            </label>
+        </div>
+        <div class="mb-3">
             <div>
                 <div class="mb-2">
                     Notification Options

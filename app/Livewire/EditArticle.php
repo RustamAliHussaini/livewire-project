@@ -4,12 +4,16 @@ namespace App\Livewire;
 
 use App\Livewire\Forms\ArticleForm;
 use App\Models\Article;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class EditArticle extends AdminComponent
 {
-   public ArticleForm $form;
+    use WithFileUploads;
+
+    public ArticleForm $form;
 
 
     public function mount(Article $article)
@@ -17,12 +21,20 @@ class EditArticle extends AdminComponent
         $this->form->setArticle($article);
     }
 
+    public function downloadPhoto(){
+        return response()->download(
+            Storage::disk('public')->path($this->form->photo_path),
+         'article.png'
+        );
+    }
     public function save()
     {
         $this->validate();
         $this->form->update();
 
-        $this->redirect('/dashboard/articles' , navigate:true);
+        session()->flash('status', 'Article successfully updated');
+
+        $this->redirect(ArticleList::class , navigate:true);
 
     }
 

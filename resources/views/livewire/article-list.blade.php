@@ -14,16 +14,37 @@
 
 
         <div class="text-gray-300">
-            <button wire:click='showAll()' class="text-gray-200 p-2 bg-blue-700 hover:bg-blue-900">
+            <button wire:click='toggleAllArticles(true)'
+
+            @class([
+                'text-gray-200 p-2 hover:bg-blue-900 rounded-sm',
+                'bg-blue-700' => $showAllArticles,
+                'bg-gray-700' => !$showAllArticles,
+             ])
+
+            >
                 Show All
             </button>
-            <button wire:click='showPublished()' class="text-gray-200 p-2 bg-blue-700 hover:bg-blue-900">
+            <button wire:click='toggleAllArticles(false)'
+            @class([
+                'text-gray-200 p-2 hover:bg-blue-900 rounded-sm',
+                'bg-gray-700' => $showAllArticles,
+                'bg-blue-700' => !$showAllArticles,
+             ])
+            >
                 Show Published (<livewire:published-count placeholder-text="loading">)
             </button>
 
         </div>
 
     </div>
+
+    @if (session('status'))
+    <div class="text-center bg-green-700 text-gray-200">
+        {{ session('status') }}
+    </div>
+
+    @endif
 
     <div class="my-3 text-gray-300">
         {{ $articles->links(data:['scrollTo' => 'table.w-full']) }}

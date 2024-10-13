@@ -3,27 +3,29 @@
 namespace App\Livewire;
 
 use App\Models\Article;
+use Livewire\Attributes\Session;
 use Livewire\WithPagination;
 
 class ArticleList extends AdminComponent
 {
     use WithPagination;
 
+    #[Session(key:'published')]
     public $showAllArticles = true;
 
     public function delete(Article $article){
         $article->delete();
+
+        cache()->forget('published-count');
     }
 
-    public function showAll(){
-        $this->showAllArticles = true;
+    public function toggleAllArticles($value)
+    {
+        $this->showAllArticles = $value;
         $this->resetPage(pageName:'articles-page');
     }
 
-    public function showPublished(){
-        $this->showAllArticles = false;
-        $this->resetPage(pageName:'articles-page');
-    }
+
 
     public function render()
     {
